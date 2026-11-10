@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Project: share data and models via Drive, not Git
+data/raw/*
+!data/raw/.gitkeep
+models/*.pkl
+models/*.bin
+models/*.pt
