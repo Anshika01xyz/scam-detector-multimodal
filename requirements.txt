@@ -1,0 +1,11 @@
+scikit-learn
+pandas
+numpy
+transformers
+torch
+easyocr
+opencv-python
+pillow
+streamlit
+matplotlib
+seaborn
