@@ -24,7 +24,7 @@ OUT = ROOT / "data" / "processed"
 
 
 def load_sms():
-    path = RAW / "SMSSpamCollection"
+    path = RAW / "SMSSpamCollection.csv"
     if not path.exists():
         print(f"[skip] {path} not found")
         return None
