@@ -17,6 +17,14 @@ BRANDS = ["paypal", "google", "amazon", "apple", "microsoft", "facebook",
           "netflix", "sbi", "hdfc", "icici", "paytm", "instagram"]
 IP_RE = re.compile(r"^(\d{1,3}\.){3}\d{1,3}$")
 
+# Well-known official domains (registered domain = name + suffix)
+TRUSTED_DOMAINS = {
+    "google.com", "wikipedia.org", "amazon.in", "amazon.com", "github.com",
+    "sbi.co.in", "hdfcbank.com", "icicibank.com", "paytm.com", "paypal.com",
+    "microsoft.com", "apple.com", "facebook.com", "instagram.com",
+    "netflix.com", "linkedin.com",
+}
+
 
 def _parse(url):
     u = str(url).strip()
@@ -39,6 +47,12 @@ def _entropy(s):
         return 0.0
     probs = [s.count(c) / len(s) for c in set(s)]
     return -sum(p * math.log2(p) for p in probs)
+
+
+def is_trusted(url):
+    """True if the URL's registered domain is in the trusted list."""
+    u, p, host, ext = _parse(url)
+    return f"{ext.domain}.{ext.suffix}" in TRUSTED_DOMAINS
 
 
 def extract_features(url):
@@ -69,6 +83,9 @@ def extract_features(url):
 
 def get_reasons(url):
     """Insaan ko samajhne wali reasons ki list (explainability)."""
+    if is_trusted(url):
+        return []
+
     u, p, host, ext = _parse(url)
     f = extract_features(url)
     reasons = []
@@ -104,8 +121,11 @@ if __name__ == "__main__":
         "https://www.google.com",
         "http://paypal-secure-login.xyz/verify/account",
         "http://192.168.4.5/bank/login.php",
+        "https://github.com/Anshika01xyz",
+        "https://www.hdfcbank.com",
     ]
     for t in tests:
         print(t)
+        print("  trusted:", is_trusted(t))
         print("  reasons:", get_reasons(t))
         print("  features:", extract_features(t))

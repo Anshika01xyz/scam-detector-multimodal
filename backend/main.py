@@ -1,9 +1,9 @@
-import pandas as pd
-import sys
 import os
+import sys
 from typing import Optional
 
 import joblib
+import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -32,6 +32,10 @@ class AnalyzeRequest(BaseModel):
 
 
 def predict_url_score(url: str) -> float:
+    # Well-known official domains get a low score (rule layer on top of the model)
+    if features.is_trusted(url):
+        return 0.01
+
     feats = features.extract_features(url)
     X = pd.DataFrame([feats])
     cols = bundle.get("features") or bundle.get("feature_names")
@@ -45,6 +49,7 @@ def predict_url_score(url: str) -> float:
 @app.get("/")
 def home():
     return {"status": "running"}
+
 
 @app.post("/predict-url")
 def predict_url(req: UrlRequest):
