@@ -159,25 +159,55 @@ def degrade(img, rng):
     return img
 
 
+def pick_sender(label, category, rng):
+    """Plausible sender for messages loaded from a CSV (all fictional)."""
+    if label == 1:
+        return rng.choice([f"+91 9{rng.randint(10000, 99999)} {rng.randint(10000, 99999)}",
+                           "AD-BANKKY", "VK-OFFERS", "BZ-ALERTS"])
+    if category == "legit_plain":
+        return rng.choice(["Mom", "Dad", "Riya", "Karan", "Office Group", "Aman", "Landlord"])
+    return rng.choice(["VM-HDFCBK", "VK-SBIINB", "AX-ICICIB", "JD-AXISBK", "VM-AIRTEL", "AD-JIOINF", "VK-AMAZON"])
+
+
 def main():
+    import argparse
+    import pandas as pd
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--csv", help="make screenshots from a CSV with text,label,category columns")
+    ap.add_argument("--out", help="output folder (default data/screenshots)")
+    ap.add_argument("--every", type=int, default=1, help="use every Nth row of the CSV (e.g. 2 = half)")
+    a = ap.parse_args()
+    out_dir = Path(a.out) if a.out else OUT
+    if not out_dir.is_absolute():
+        out_dir = ROOT / out_dir
+
     rng = random.Random(SEED)
-    OUT.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if a.csv:
+        df = pd.read_csv(ROOT / a.csv if not Path(a.csv).is_absolute() else a.csv).iloc[::a.every]
+        items = [(r.text, int(r.label), r.category, pick_sender(int(r.label), r.category, rng))
+                 for r in df.itertuples()]
+    else:
+        items = [(t, l, st, sd) for t, l, st, sd in MESSAGES]
+
     rows = []
-    for i, (text, label, stype, sender) in enumerate(MESSAGES, 1):
+    for i, (text, label, extra, sender) in enumerate(items, 1):
         style = rng.choice(list(STYLES))
         img = degrade(render(text, sender, style, rng), rng)
         ext = "jpg" if rng.random() < 0.7 else "png"
-        name = f"shot_{i:02d}_{'scam' if label else 'legit'}.{ext}"
+        name = f"shot_{i:03d}_{'scam' if label else 'legit'}.{ext}" if a.csv else \
+               f"shot_{i:02d}_{'scam' if label else 'legit'}.{ext}"
         if ext == "jpg":
-            img.save(OUT / name, quality=rng.randint(55, 92))
+            img.save(out_dir / name, quality=rng.randint(55, 92))
         else:
-            img.save(OUT / name)
-        rows.append([name, label, stype, style, text])
-    with open(OUT / "labels.csv", "w", newline="", encoding="utf-8") as f:
+            img.save(out_dir / name)
+        rows.append([name, label, extra, style, text])
+    col = "category" if a.csv else "scam_type"
+    with open(out_dir / "labels.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
-        w.writerow(["filename", "label", "scam_type", "style", "text"])
+        w.writerow(["filename", "label", col, "style", "text"])
         w.writerows(rows)
-    print(f"Created {len(rows)} screenshots in {OUT}")
+    print(f"Created {len(rows)} screenshots in {out_dir}")
 
 
 if __name__ == "__main__":
