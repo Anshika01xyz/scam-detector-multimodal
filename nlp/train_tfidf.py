@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROC = ROOT / "data" / "processed"
 MODELS = ROOT / "models"
 REPORTS = ROOT / "reports"
+INDIA_WEIGHT = 5  # how much more my_scams.csv rows count during training
 
 
 def main():
@@ -39,7 +40,10 @@ def main():
         # class_weight="balanced" because only ~12% of messages are scams
         ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
     ])
-    model.fit(train["clean_text"], train["label"])
+    # The Indian examples are few (~120) next to ~5,000 UK-style SMS, so count each
+    # of them 5x. Without this the model flags normal Indian bank alerts as scams.
+    weights = np.where(train["source"] == "my_scams", INDIA_WEIGHT, 1.0)
+    model.fit(train["clean_text"], train["label"], clf__sample_weight=weights)
 
     probs = model.predict_proba(test["clean_text"])[:, 1]
     preds = (probs >= 0.5).astype(int)
