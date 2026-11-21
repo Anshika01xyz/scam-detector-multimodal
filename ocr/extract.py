@@ -6,7 +6,7 @@
 
 Engines: "easyocr" (main, deep-learning) or "tesseract" (fallback, needs the tesseract
 program installed). "auto" uses EasyOCR if installed, otherwise tesseract.
-Preprocess modes: "none" (original image), "gray", "binary" (see ocr/preprocess.py).
+Preprocess modes: "auto" (default), "none" (original image), "gray", "binary" (see ocr/preprocess.py).
 """
 import sys
 from pathlib import Path
@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "nlp"))
 from clean import extract_urls  # noqa: E402
 from preprocess import load_image, preprocess  # noqa: E402
 
-DEFAULT_MODE = "binary"
+DEFAULT_MODE = "auto"  # auto: "none" for EasyOCR, "binary" for tesseract (best on our tests)
 _reader = None
 
 
@@ -83,13 +83,15 @@ def _tesseract_read(img):
 def extract_text(image, mode=DEFAULT_MODE, engine="auto"):
     """image: file path or a BGR numpy array. Returns dict with text, confidence, urls."""
     img = load_image(image) if isinstance(image, (str, Path)) else image
+    engine = _pick_engine(engine)
+    if mode == "auto":
+        mode = "none" if engine == "easyocr" else "binary"
     if mode == "gray":
         img = preprocess(img)
     elif mode == "binary":
         img = preprocess(img, binarize=True)
     elif mode != "none":
-        raise ValueError("mode must be 'none', 'gray' or 'binary'")
-    engine = _pick_engine(engine)
+        raise ValueError("mode must be 'auto', 'none', 'gray' or 'binary'")
     text, conf = _easyocr_read(img) if engine == "easyocr" else _tesseract_read(img)
     return {"text": text, "confidence": round(conf, 3), "urls": extract_urls(text),
             "engine": engine, "mode": mode}
