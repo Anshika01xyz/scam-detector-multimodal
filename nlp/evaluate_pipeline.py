@@ -29,7 +29,7 @@ def main():
     ap.add_argument("--dir", default="data/screenshots", help="folder with images and labels.csv")
     ap.add_argument("--model", default="auto", choices=["auto", "tfidf", "distilbert"])
     ap.add_argument("--ocr-engine", default="auto", choices=["auto", "easyocr", "tesseract"])
-    ap.add_argument("--ocr-mode", default="binary", choices=["none", "gray", "binary"])
+    ap.add_argument("--ocr-mode", default="auto", choices=["auto", "none", "gray", "binary"])
     a = ap.parse_args()
 
     shots = ROOT / a.dir
