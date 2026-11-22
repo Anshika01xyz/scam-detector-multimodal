@@ -2,8 +2,8 @@ import time
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (precision_score, recall_score, f1_score,
-                             confusion_matrix)
+from sklearn.metrics import (accuracy_score, precision_score, recall_score,
+                             f1_score, confusion_matrix)
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
@@ -37,6 +37,7 @@ for name, m in models.items():
     tn, fp, fn, tp = confusion_matrix(y_te, pred).ravel()
     f1 = f1_score(y_te, pred)
     print(f"\n{name}")
+    print("  Accuracy :", round(accuracy_score(y_te, pred), 4))
     print("  Precision:", round(precision_score(y_te, pred), 4))
     print("  Recall   :", round(recall_score(y_te, pred), 4))
     print("  F1       :", round(f1, 4))
