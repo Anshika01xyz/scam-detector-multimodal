@@ -1,20 +1,23 @@
-def compute_risk(text_score=None, screenshot_score=None, url_score=None):
-    weights = {"text": 0.4, "screenshot": 0.3, "url": 0.3}
-    scores = {"text": text_score, "screenshot": screenshot_score, "url": url_score}
+WEIGHTS = {"text": 0.6, "url": 0.4}
 
+
+def compute_risk(text_score=None, url_score=None):
+    scores = {"text": text_score, "url": url_score}
     available = {k: v for k, v in scores.items() if v is not None}
+
+    # Kuch bhi check nahi hua: "legit" nahi, unknown
     if not available:
-        return {"risk_score": 0, "verdict": "safe"}
+        return {"risk_score": None, "verdict": None}
 
-    total_weight = sum(weights[k] for k in available)
-    risk = sum(weights[k] * v for k, v in available.items()) / total_weight
-    risk_score = round(risk * 100)
+    total_weight = sum(WEIGHTS[k] for k in available)
+    risk = sum(WEIGHTS[k] * v for k, v in available.items()) / total_weight
+    risk = round(risk, 3)
 
-    if risk_score >= 70:
+    if risk >= 0.7:
         verdict = "scam"
-    elif risk_score >= 40:
+    elif risk >= 0.4:
         verdict = "suspicious"
     else:
-        verdict = "safe"
+        verdict = "legit"
 
-    return {"risk_score": risk_score, "verdict": verdict}
+    return {"risk_score": risk, "verdict": verdict}

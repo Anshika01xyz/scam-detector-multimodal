@@ -26,9 +26,14 @@ class UrlRequest(BaseModel):
 
 
 class AnalyzeRequest(BaseModel):
-    url: Optional[str] = None
     text_score: Optional[float] = None
-    screenshot_score: Optional[float] = None
+    text_verdict: Optional[str] = None
+    scam_type: Optional[str] = None
+    reasons: Optional[list] = None
+    extracted_text: Optional[str] = None
+    ocr_confidence: Optional[float] = None
+    urls_found: Optional[list] = None
+    url: Optional[str] = None
 
 
 def predict_url_score(url: str) -> float:
@@ -38,7 +43,7 @@ def predict_url_score(url: str) -> float:
 
     feats = features.extract_features(url)
     X = pd.DataFrame([feats])
-    cols = bundle.get("features") or bundle.get("feature_names")
+    cols = bundle.get("columns")
     if cols:
         X = X[list(cols)]
     elif hasattr(model, "feature_names_in_"):
@@ -54,7 +59,7 @@ def home():
 @app.post("/predict-url")
 def predict_url(req: UrlRequest):
     score = predict_url_score(req.url)
-    label = "phishing" if score >= 0.5 else "legitimate"
+    label = "phishing" if score >= 0.5 else "legit"
     return {
         "label": label,
         "score": round(score, 3),
@@ -64,5 +69,32 @@ def predict_url(req: UrlRequest):
 
 @app.post("/analyze")
 def analyze(req: AnalyzeRequest):
-    url_score = predict_url_score(req.url) if req.url else None
-    return compute_risk(req.text_score, req.screenshot_score, url_score)
+    urls = list(req.urls_found or [])
+    if req.url:
+        urls.append(req.url)
+
+    url_results = []
+    for u in urls:
+        s = predict_url_score(u)
+        url_results.append({
+            "url": u,
+            "label": "phishing" if s >= 0.5 else "legit",
+            "score": round(s, 3),
+            "reasons": features.get_reasons(u),
+        })
+
+    # The riskiest URL is used in the final risk score
+    url_score = max((r["score"] for r in url_results), default=None)
+
+    result = compute_risk(req.text_score, url_score)
+
+    reasons = list(req.reasons or [])
+    for r in url_results:
+        if r["label"] == "phishing":
+            reasons.extend(r["reasons"])
+
+    is_legit = result["verdict"] == "legit"
+    result["scam_type"] = None if is_legit else req.scam_type
+    result["reasons"] = [] if is_legit else reasons
+    result["url_results"] = url_results
+    return result
