@@ -37,11 +37,27 @@ TRAILING_TIME = re.compile(r"\s*\b\d{1,2}(?:[:.]\s?\d{2}\s?(?:[ap][mi]?)?|\s\d{2
 _reader = None
 
 
+def _find_tesseract():
+    """Find the tesseract program: on PATH, or in the usual install folders (Windows installers
+    do not add it to PATH by default)."""
+    exe = shutil.which("tesseract")
+    if exe:
+        return exe
+    for p in (r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+              r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+              "/opt/homebrew/bin/tesseract", "/usr/local/bin/tesseract"):
+        if Path(p).exists():
+            return p
+    return None
+
+
 def _tesseract_ok():
-    if shutil.which("tesseract") is None:
+    exe = _find_tesseract()
+    if exe is None:
         return False
     try:
-        import pytesseract  # noqa: F401
+        import pytesseract
+        pytesseract.pytesseract.tesseract_cmd = exe
         return True
     except ImportError:
         return False
@@ -114,6 +130,8 @@ def _easyocr_read(img, strip_ui):
 
 
 def _tesseract_read(img, strip_ui):
+    if not _tesseract_ok():
+        raise RuntimeError("Tesseract not found. Install it (see docs/demo_setup.md) or use engine='easyocr'.")
     import pytesseract
     data = pytesseract.image_to_data(img, config="--psm 6", output_type=pytesseract.Output.DICT)
     cut = CHROME_TOP * img.shape[0] if (strip_ui and _is_tall(img)) else -1
@@ -127,6 +145,12 @@ def _tesseract_read(img, strip_ui):
 
 def _read(engine, img, strip_ui):
     return (_easyocr_read if engine == "easyocr" else _tesseract_read)(img, strip_ui)
+
+
+def _norm_url(u):
+    """Domains are not case-sensitive, so lower-case the scheme and host (OCR often mixes the case)."""
+    m = re.match(r"^(https?://)?([^/\s]+)(.*)$", u, re.I)
+    return u if not m else (m.group(1) or "").lower() + m.group(2).lower() + m.group(3)
 
 
 def _squash(s):
@@ -145,7 +169,7 @@ def extract_text(image, mode=DEFAULT_MODE, engine="auto", strip_ui=True):
     if mode == "dual":
         text, conf = _read(engine, preprocess(img, binarize=True), strip_ui)
         text_raw, _ = _read(engine, img, strip_ui)
-        urls = extract_urls(text_raw) or extract_urls(text)
+        urls = [_norm_url(u) for u in (extract_urls(text_raw) or extract_urls(text))]
         for u in urls:  # make sure the correctly-read link is in the text the model sees
             if _squash(u) not in _squash(text):
                 text = f"{text} {u}"
@@ -159,5 +183,5 @@ def extract_text(image, mode=DEFAULT_MODE, engine="auto", strip_ui=True):
         else:
             raise ValueError("mode must be 'auto', 'none', 'gray', 'binary' or 'dual'")
         text, conf = _read(engine, work, strip_ui)
-        urls = extract_urls(text)
+        urls = [_norm_url(u) for u in extract_urls(text)]
     return {"text": text, "confidence": round(conf, 3), "urls": urls, "engine": engine, "mode": mode}

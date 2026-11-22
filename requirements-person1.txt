@@ -1,0 +1,15 @@
+# Packages for the text model, OCR and frontend (Person 1).
+# Kept separate from requirements.txt so it does not clash with Person 2's pinned versions.
+# Merge both into one requirements.txt at integration time.
+numpy
+pandas
+scikit-learn
+joblib
+torch
+transformers
+opencv-python-headless
+pillow
+pytesseract
+streamlit
+# optional second OCR engine (large download; links are read less reliably than with tesseract):
+# easyocr

@@ -27,7 +27,7 @@ TYPE_MAP = {"kyc": "Bank / KYC fraud", "upi": "UPI / payment scam", "lottery": "
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default="data/screenshots", help="folder with images and labels.csv")
-    ap.add_argument("--model", default="auto", choices=["auto", "tfidf", "distilbert"])
+    ap.add_argument("--model", default="auto", choices=["auto", "tfidf", "distilbert", "ensemble"])
     ap.add_argument("--ocr-engine", default="auto", choices=["auto", "easyocr", "tesseract"])
     ap.add_argument("--ocr-mode", default="auto", choices=["auto", "none", "gray", "binary"])
     a = ap.parse_args()

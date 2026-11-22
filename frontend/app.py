@@ -37,6 +37,8 @@ EXAMPLES = {
 
 def available_models():
     opts = {}
+    if BERT_DIR.exists() and TFIDF.exists():
+        opts["Both models averaged"] = "ensemble"
     if BERT_DIR.exists():
         opts["DistilBERT (best on our tests)"] = "distilbert"
     if TFIDF.exists():

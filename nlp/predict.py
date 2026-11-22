@@ -8,7 +8,7 @@ Command line:
     python nlp/predict.py "Your KYC has expired..."
     python nlp/predict.py --image data/screenshots/shot_01_scam.jpg --model tfidf
 
-Model: "auto" uses DistilBERT if models/distilbert_scam exists, otherwise TF-IDF.
+Model: "auto" uses DistilBERT if models/distilbert_scam exists, otherwise TF-IDF; "ensemble" averages both.
 """
 import argparse
 import json
@@ -37,14 +37,20 @@ def verdict_from_score(score):
 
 
 def resolve_model(model):
+    """"auto": DistilBERT if trained, else TF-IDF. "ensemble": average of both (if both exist)."""
+    have_bert, have_tfidf = BERT_DIR.exists(), TFIDF.exists()
     if model == "auto":
-        return "distilbert" if BERT_DIR.exists() else "tfidf"
+        return "distilbert" if have_bert else "tfidf"
+    if model == "ensemble":
+        return "ensemble" if (have_bert and have_tfidf) else ("distilbert" if have_bert else "tfidf")
     return model
 
 
 def score_text(text, model="auto"):
     """Probability (0 to 1) that the text is a scam."""
     model = resolve_model(model)
+    if model == "ensemble":
+        return (score_text(text, "tfidf") + score_text(text, "distilbert")) / 2
     if model == "tfidf":
         if "tfidf" not in _cache:
             _cache["tfidf"] = joblib.load(TFIDF)
@@ -95,7 +101,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("text", nargs="?", help="message text")
     ap.add_argument("--image", help="path to a screenshot instead of text")
-    ap.add_argument("--model", default="auto", choices=["auto", "tfidf", "distilbert"])
+    ap.add_argument("--model", default="auto", choices=["auto", "tfidf", "distilbert", "ensemble"])
     a = ap.parse_args()
     result = analyze(text=a.text if not a.image else None, image=a.image, model=a.model)
     print(json.dumps(result, indent=2, ensure_ascii=False))
