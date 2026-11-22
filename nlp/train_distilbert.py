@@ -33,7 +33,7 @@ EPOCHS = 3
 BATCH_SIZE = 32
 LEARNING_RATE = 2e-5
 MAX_LEN = 128
-INDIA_WEIGHT = 5  # same idea as in train_tfidf.py
+INDIA_WEIGHT = 3  # same idea as in train_tfidf.py
 SEED = 42
 
 

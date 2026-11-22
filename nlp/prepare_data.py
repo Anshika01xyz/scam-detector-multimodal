@@ -36,13 +36,14 @@ def load_sms():
 
 
 def load_mine():
-    path = RAW / "my_scams.csv"
-    if not path.exists():
-        print(f"[skip] {path} not found")
-        return None
-    df = pd.read_csv(path)
-    df["source"] = "my_scams"
-    return df
+    """my_scams.csv plus any extra my_scams*.csv (e.g. my_scams_v2.csv made by make_extra_training_data.py)."""
+    frames = []
+    for path in sorted(RAW.glob("my_scams*.csv")):
+        df = pd.read_csv(path)[["text", "label"]]
+        df["source"] = "my_scams"
+        print(f"[load] {path.name}: {len(df)} rows")
+        frames.append(df)
+    return pd.concat(frames, ignore_index=True) if frames else None
 
 
 def main():

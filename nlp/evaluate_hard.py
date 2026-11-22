@@ -88,6 +88,8 @@ def main():
         probs_all["DistilBERT"] = score_distilbert(texts)
     else:
         print(f"[skip] {BERT_DIR} not found\n")
+    if len(probs_all) == 2:  # average of both models' scam probabilities
+        probs_all["Average"] = np.mean(list(probs_all.values()), axis=0)
     for name, probs in probs_all.items():
         results[name], preds[name] = evaluate(name, probs, df)
 
