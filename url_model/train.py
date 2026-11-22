@@ -20,9 +20,9 @@ X = pd.DataFrame([extract_features(u) for u in df["url"]])
 y = df["result"].values
 print("Features done in", round(time.time() - t), "sec")
 
-# 3. Split
+# 3. Split (40% testing)
 X_tr, X_te, y_tr, y_te = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y)
+    X, y, test_size=0.4, random_state=42, stratify=y)
 
 # 4. Models
 models = {
