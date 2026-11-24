@@ -1,8 +1,9 @@
 import time
 import joblib
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -33,8 +34,9 @@ models = {
     "LogisticRegression": make_pipeline(
         StandardScaler(), LogisticRegression(max_iter=1000, random_state=42)),
     "DecisionTree": DecisionTreeClassifier(max_depth=10, random_state=42),
+    "KNN": make_pipeline(
+        StandardScaler(), KNeighborsClassifier(n_neighbors=5, n_jobs=-1)),
     "RandomForest": RandomForestClassifier(n_estimators=150, n_jobs=-1, random_state=42),
-    "GradientBoosting": GradientBoostingClassifier(n_estimators=100, random_state=42),
     "XGBoost": XGBClassifier(n_estimators=200, max_depth=6, eval_metric="logloss", n_jobs=-1),
 }
 
@@ -51,12 +53,7 @@ for name, m in models.items():
     f1 = f1_score(y_te, pred)
     fpr = fp / (fp + tn)
     results.append((name, acc, prec, rec, f1, fpr))
-    print(f"\n{name}  (trained in {round(time.time() - t0)} sec)")
-    print("  Accuracy :", round(acc, 4))
-    print("  Precision:", round(prec, 4))
-    print("  Recall   :", round(rec, 4))
-    print("  F1       :", round(f1, 4))
-    print("  False positive rate:", round(fpr, 4))
+    print(f"\n{name}  (done in {round(time.time() - t0)} sec)")
     print("  Confusion matrix [[TN, FP], [FN, TP]]:", [[tn, fp], [fn, tp]])
     if f1 > best_f1:
         best_name, best_f1, best_model = name, f1, m
