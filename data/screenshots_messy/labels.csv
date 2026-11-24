@@ -1,0 +1,33 @@
+filename,label,scam_type,style,text
+shot_01_scam.jpg,1,kyc,wa_light,Dear customer your Kotak account is suspended. Verify PAN immediately at http://kotak-verify.top
+shot_02_scam.jpg,1,kyc,sms_light,Your Union Bank KYC expires today. Update now to avoid account freeze: http://unionbank-kyc.in.net/up
+shot_03_scam.jpg,1,kyc,sms_light,Aapka bank account block ho jayega. Abhi KYC update kare is link par: http://bank-kyc.click
+shot_04_scam.jpg,1,kyc,wa_light,Your PAN is inactive. Income tax dept will block your accounts. Click: incometax-pan.xyz/verify
+shot_05_scam.jpg,1,upi,wa_dark,Your UPI refund of Rs 3000 is waiting. Enter your PIN on this link to receive: http://upi-refund.shop
+shot_06_scam.jpg,1,upi,sms_light,"Dear customer, your PhonePe reward of Rs 1500 expires today. Claim here http://phonepe-win.shop"
+shot_07_scam.jpg,1,upi,wa_dark,Rs 8000 cashback received from Google Pay. Accept the collect request to get the money in your account
+shot_08_scam.jpg,1,lottery,sms_dark,You won Rs 15 lakh lucky draw. Pay Rs 3000 fee on WhatsApp +91 90000 99900 to claim your prize
+shot_09_scam.jpg,1,lottery,sms_light,Congratulations you have been selected for a free laptop. Pay Rs 799 shipping to receive
+shot_10_scam.jpg,1,job,sms_light,Work from home and earn Rs 4000 daily just by rating hotels. Join telegram today t.me/rate_earn_in
+shot_11_scam.jpg,1,job,wa_light,"Hiring part time. Earn Rs 800 per task, withdraw daily. Registration fee Rs 500 only. WhatsApp now"
+shot_12_scam.jpg,1,electricity,wa_light,Your electricity will be cut tonight due to unpaid bill. Call officer 90000 11111 now
+shot_13_scam.jpg,1,parcel,sms_dark,Your courier is stuck. Pay Rs 30 redelivery charge at http://courier-redeliver.xyz
+shot_14_scam.jpg,1,parcel,sms_dark,Delivery failed: wrong pincode. Confirm address and pay Rs 25 here: http://parcel-fix.in.net/pay
+shot_15_scam.jpg,1,loan,wa_light,Get instant loan Rs 1 lakh without documents. Pay Rs 2000 processing fee first. Apply: quickloan-now.top
+shot_16_scam.jpg,1,other,wa_light,A case is registered against your Aadhaar. Call CBI officer on +91 90000 67676 within 1 hour to avoid arrest
+shot_17_legit.jpg,0,none,sms_dark,"Rs 1,200 debited from your account XX4455 at BigBazaar on 20-Nov. Avl bal Rs 5,300."
+shot_18_legit.jpg,0,none,sms_dark,Your OTP is 556677 for logging in to your Kotak app. Do not share with anyone.
+shot_19_legit.jpg,0,none,wa_dark,Your Ola ride has ended. Total fare Rs 245. Thanks for riding with us.
+shot_20_legit.jpg,0,none,wa_light,Your order from Myntra will be delivered tomorrow between 10 AM and 2 PM.
+shot_21_legit.jpg,0,none,wa_dark,Dinner at 8? I'll book the table at the Italian place.
+shot_22_legit.jpg,0,none,sms_dark,Your Jio recharge of Rs 239 is successful. Validity till 20 Dec.
+shot_23_legit.jpg,0,none,sms_light,Your electricity bill for November is Rs 980. Last date to pay is 30 Nov.
+shot_24_legit.jpg,0,none,wa_dark,Meeting moved to Monday 11 AM. Please confirm your availability.
+shot_25_legit.jpg,0,none,wa_dark,"Salary of Rs 52,000 credited to your A/c XX9012 on 30-Nov-26."
+shot_26_legit.jpg,0,none,wa_light,Aaj ka match dekhne aa raha hai kya? Sab log mere ghar pe hain.
+shot_27_legit.jpg,0,none,wa_light,Your IRCTC ticket PNR 2345678901 is confirmed. Train 12951 departs 17:00 on 25 Nov.
+shot_28_legit.jpg,0,none,wa_light,"Hi, the plumber will come at 4 pm tomorrow. Please keep the kitchen free."
+shot_29_legit.jpg,0,none,wa_light,Your package from Amazon has been delivered. Thank you for shopping with us.
+shot_30_legit.jpg,0,none,sms_dark,"Reminder: your EMI of Rs 3,150 is due on 5 Dec. Please maintain sufficient balance."
+shot_31_legit.jpg,0,none,sms_dark,Your semester fee receipt has been generated. Download it from the college portal.
+shot_32_legit.jpg,0,none,sms_dark,"HDFC Bank: Never share your OTP, PIN or password with anyone, even bank staff."
